@@ -1,6 +1,6 @@
-package `threads-nexus`.src.main.kotlin.com.mrjovanovic.threadsnexus.repository
+package kotlin.com.mrjovanovic.threadsnexus.repository
 
-import `threads-nexus`.src.main.kotlin.com.mrjovanovic.threadsnexus.model.Device
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import kotlin.com.mrjovanovic.threadsnexus.model.Device
 
 interface DeviceRepository : ReactiveMongoRepository<Device, String>

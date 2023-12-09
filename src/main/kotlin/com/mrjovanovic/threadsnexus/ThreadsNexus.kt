@@ -1,4 +1,4 @@
-package `threads-nexus`.src.main.kotlin.com.mrjovanovic.threadsnexus
+package kotlin.com.mrjovanovic.threadsnexus
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class ThreadsNexus
 
 fun main(args: Array<String>) {
-	runApplication<ThreadsNexus>(*args)
+    runApplication<ThreadsNexus>(*args)
 }

@@ -1,4 +1,4 @@
-package `threads-nexus`.src.main.kotlin.com.mrjovanovic.threadsnexus.model.enumeration
+package kotlin.com.mrjovanovic.threadsnexus.model.enumeration
 
 enum class DeviceType {
     WINDOWS,
