@@ -1,9 +1,9 @@
-package kotlin.com.mrjovanovic.threadsnexus.model
+package com.mrjovanovic.threadsnexus.model
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
-import kotlin.com.mrjovanovic.threadsnexus.model.enumeration.Severity
+import com.mrjovanovic.threadsnexus.model.enumeration.Severity
 
 @Document(collection = "DeviceEvents")
 data class DeviceEvent(

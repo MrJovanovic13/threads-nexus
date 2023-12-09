@@ -1,9 +1,9 @@
-package kotlin.com.mrjovanovic.threadsnexus.model
+package com.mrjovanovic.threadsnexus.model
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import kotlin.com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
-import kotlin.com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
+import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
+import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
 
 @Document(collection = "Devices")
 data class Device(

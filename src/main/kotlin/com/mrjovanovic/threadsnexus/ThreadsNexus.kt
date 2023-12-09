@@ -1,4 +1,4 @@
-package kotlin.com.mrjovanovic.threadsnexus
+package com.mrjovanovic.threadsnexus
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

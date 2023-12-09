@@ -1,4 +1,4 @@
-package kotlin.com.mrjovanovic.threadsnexus.handler
+package com.mrjovanovic.threadsnexus.handler
 
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -6,9 +6,9 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.json
 import reactor.core.publisher.Mono
-import kotlin.com.mrjovanovic.threadsnexus.model.DeviceEvent
-import kotlin.com.mrjovanovic.threadsnexus.repository.DeviceEventRepository
-import kotlin.com.mrjovanovic.threadsnexus.repository.DeviceRepository
+import com.mrjovanovic.threadsnexus.model.DeviceEvent
+import com.mrjovanovic.threadsnexus.repository.DeviceEventRepository
+import com.mrjovanovic.threadsnexus.repository.DeviceRepository
 
 @Component
 class DeviceEventHandler(

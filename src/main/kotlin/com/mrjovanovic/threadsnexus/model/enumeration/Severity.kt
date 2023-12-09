@@ -1,4 +1,4 @@
-package kotlin.com.mrjovanovic.threadsnexus.model.enumeration
+package com.mrjovanovic.threadsnexus.model.enumeration
 
 enum class Severity {
     LOW,

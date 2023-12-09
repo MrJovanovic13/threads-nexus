@@ -8,11 +8,10 @@
 		<version>3.2.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
+	<groupId>com.mrjovanovic</groupId>
 	<artifactId>threadsnexus</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>functional</name>
-	<description>Demo project for Spring Boot</description>
+	<name>threadsnexus</name>
 	<properties>
 		<java.version>17</java.version>
 		<kotlin.version>1.8.22</kotlin.version>
@@ -66,8 +65,8 @@
 	</dependencies>
 
 	<build>
-		<sourceDirectory>threads-nexus/src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>threads-nexus/src/test/kotlin</testSourceDirectory>
+		<sourceDirectory>src/main/kotlin/com/mrjovanovic/threadsnexus</sourceDirectory>
+		<testSourceDirectory>src/test/kotlin/com/mrjovanovic/threadsnexus</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

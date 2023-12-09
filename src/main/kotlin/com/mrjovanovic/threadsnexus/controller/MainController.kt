@@ -1,12 +1,12 @@
-package kotlin.com.mrjovanovic.threadsnexus.controller
+package com.mrjovanovic.threadsnexus.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.web.reactive.function.server.router
-import kotlin.com.mrjovanovic.threadsnexus.handler.DeviceEventHandler
-import kotlin.com.mrjovanovic.threadsnexus.handler.DeviceHandler
+import com.mrjovanovic.threadsnexus.handler.DeviceEventHandler
+import com.mrjovanovic.threadsnexus.handler.DeviceHandler
 
 @Configuration
 class MainController {
