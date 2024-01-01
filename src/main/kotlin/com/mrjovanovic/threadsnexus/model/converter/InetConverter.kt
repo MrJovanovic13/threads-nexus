@@ -1,4 +1,4 @@
-package com.mrjovanovic.threadsnexus.model.serializer
+package com.mrjovanovic.threadsnexus.model.converter
 
 import org.bson.Document
 import org.springframework.core.convert.converter.Converter
