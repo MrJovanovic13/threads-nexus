@@ -5,5 +5,6 @@ enum class DeviceType {
     MAC,
     LINUX,
     MOBILE_ANDROID,
-    MOBILE_IOS
+    MOBILE_IOS,
+    UNKNOWN
 }

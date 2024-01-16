@@ -1,5 +1,6 @@
 package com.mrjovanovic.threadsnexus.controller
 
+import com.mrjovanovic.threadsnexus.handler.CommandHandler
 import com.mrjovanovic.threadsnexus.handler.DeviceEventHandler
 import com.mrjovanovic.threadsnexus.handler.DeviceHandler
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +15,7 @@ class MainController {
     fun mainRouter(
         @Autowired deviceEventHandler: DeviceEventHandler,
         @Autowired deviceHandler: DeviceHandler,
+        @Autowired commandHandler: CommandHandler
     ) = router {
 
         path("/api/events")
@@ -26,6 +28,8 @@ class MainController {
 
         path("/api/devices")
             .nest {
+                GET("/{deviceId}/commands").invoke(commandHandler::streamCommands)
+                POST("/{deviceId}/publish-command").invoke(commandHandler::publishCommand)
                 POST("").invoke(deviceHandler::saveDevice)
             }
     }

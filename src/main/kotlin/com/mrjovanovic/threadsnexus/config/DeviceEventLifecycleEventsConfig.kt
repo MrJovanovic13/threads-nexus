@@ -7,11 +7,11 @@ import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent
 import reactor.core.publisher.Sinks
 
 @Configuration
-class MongoLifecycleEventsConfig(private val valueSink: Sinks.Many<DeviceEvent>) :
+class DeviceEventLifecycleEventsConfig(private val sink: Sinks.Many<DeviceEvent>) :
     AbstractMongoEventListener<DeviceEvent>() {
 
     override fun onAfterSave(event: AfterSaveEvent<DeviceEvent>) {
-        valueSink.tryEmitNext(event.source)
+        sink.tryEmitNext(event.source)
         super.onAfterSave(event)
     }
 }

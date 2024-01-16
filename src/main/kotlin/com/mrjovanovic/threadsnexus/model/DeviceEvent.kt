@@ -10,6 +10,7 @@ data class DeviceEvent(
 
     @Id
     val id: String? = null,
+    val title: String,
     val info: String?,
     val timestamp: Instant,
     val severity: Severity?,

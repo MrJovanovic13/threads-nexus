@@ -8,6 +8,7 @@ import java.net.InetAddress
 
 @Document(collection = "Devices")
 data class Device(
+
     @Id
     var id: String? = null,
     var name: String?,
