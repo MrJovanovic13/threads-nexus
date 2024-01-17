@@ -17,5 +17,6 @@ class DeviceEventsSinkConfig {
     @Bean
     fun deviceEventsFlux(): Flux<DeviceEvent> {
         return deviceEventsSink().asFlux()
+            .cache(0)
     }
 }

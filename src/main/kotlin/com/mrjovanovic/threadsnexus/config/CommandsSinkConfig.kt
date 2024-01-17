@@ -11,11 +11,14 @@ class CommandsSinkConfig {
 
     @Bean
     fun commandsSink(): Sinks.Many<Command> {
-        return Sinks.many().multicast().onBackpressureBuffer(20)
+        return Sinks.many()
+            .multicast()
+            .onBackpressureBuffer(20)
     }
 
     @Bean
     fun commandsFlux(): Flux<Command> {
         return commandsSink().asFlux()
+            .cache(0)
     }
 }
