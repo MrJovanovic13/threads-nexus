@@ -29,6 +29,7 @@ class MainController {
         path("/api/devices")
             .nest {
                 GET("/{deviceId}/commands").invoke(commandHandler::streamCommands)
+                GET("").invoke(deviceHandler::getAllDevices)
                 POST("/{deviceId}/publish-command").invoke(commandHandler::publishCommand)
                 POST("").invoke(deviceHandler::saveDevice)
             }

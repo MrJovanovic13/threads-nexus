@@ -15,4 +15,9 @@ class DeviceHandler(private val deviceRepository: DeviceRepository) {
         ServerResponse.ok()
             .json()
             .body(deviceRepository.saveAll(req.bodyToMono(Device::class.java)), Device::class.java)
+
+    fun getAllDevices(req: ServerRequest): Mono<ServerResponse> =
+        ServerResponse.ok()
+            .json()
+            .body(deviceRepository.findAll(), Device::class.java)
 }
