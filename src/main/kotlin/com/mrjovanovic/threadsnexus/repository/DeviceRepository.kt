@@ -1,6 +1,10 @@
 package com.mrjovanovic.threadsnexus.repository
 
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import com.mrjovanovic.threadsnexus.model.Device
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import reactor.core.publisher.Flux
 
-interface DeviceRepository : ReactiveMongoRepository<Device, String>
+interface DeviceRepository : ReactiveMongoRepository<Device, String> {
+
+    fun findDevicesByGroupId(groupId: String): Flux<Device>
+}

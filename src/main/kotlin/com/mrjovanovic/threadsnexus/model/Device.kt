@@ -14,5 +14,6 @@ data class Device(
     var name: String?,
     var type: DeviceType,
     val status: DeviceStatus,
-    var ip: InetAddress?
+    var ip: InetAddress?,
+    var groupId: String? = null
 )
