@@ -1,6 +1,10 @@
 package com.mrjovanovic.threadsnexus.handler
 
 import com.mrjovanovic.threadsnexus.model.Command
+import com.mrjovanovic.threadsnexus.model.Device
+import com.mrjovanovic.threadsnexus.model.enumeration.CommandType
+import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
+import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
 import com.mrjovanovic.threadsnexus.repository.CommandRepository
 import org.springframework.http.MediaType
 import org.springframework.http.codec.ServerSentEvent
@@ -30,17 +34,19 @@ class CommandHandler(
             )
 
     fun streamCommands(req: ServerRequest): Mono<ServerResponse> {
+        val device = Device("BACKEND_SERVER", "BACKEND_SERVER", DeviceType.UNKNOWN, DeviceStatus.ONLINE, null, null)
+
         return ServerResponse.ok()
             .contentType(MediaType.TEXT_EVENT_STREAM)
             .body(
                 Flux.merge(
                     valueFlux.filter { it.device.id.equals(req.pathVariable("deviceId")) },
                     Flux.interval(Duration.ofSeconds(5))
-                        .map { e ->
-                            ServerSentEvent.builder(e)
-                                .build()
-                        }
-                )
+                        .map { Command(null, CommandType.HEARTBEAT, device) }
+                ).map { e ->
+                    ServerSentEvent.builder(e)
+                        .build()
+                }
             )
     }
 }
