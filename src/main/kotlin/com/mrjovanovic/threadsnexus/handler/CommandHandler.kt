@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.json
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Duration
 
 @Component
 class CommandHandler(
@@ -32,12 +33,14 @@ class CommandHandler(
         return ServerResponse.ok()
             .contentType(MediaType.TEXT_EVENT_STREAM)
             .body(
-                valueFlux
-                    .filter { it.device.id.equals(req.pathVariable("deviceId")) }
-                    .map { e ->
-                        ServerSentEvent.builder(e)
-                            .build()
-                    }
+                Flux.merge(
+                    valueFlux.filter { it.device.id.equals(req.pathVariable("deviceId")) },
+                    Flux.interval(Duration.ofSeconds(5))
+                        .map { e ->
+                            ServerSentEvent.builder(e)
+                                .build()
+                        }
+                )
             )
     }
 }
