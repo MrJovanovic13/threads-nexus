@@ -30,7 +30,7 @@ class DeviceEventsSinkConfig {
 
     @EventListener(ApplicationReadyEvent::class)
     fun initializeSSEHeartbeat() {
-        Flux.interval(Duration.ofSeconds(10))
+        Flux.interval(Duration.ofSeconds(5))
             .doOnNext { emitHeartbeatEvent() }
             .subscribe()
     }
