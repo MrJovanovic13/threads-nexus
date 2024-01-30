@@ -13,7 +13,7 @@ data class Device(
     var id: String? = null,
     var name: String?,
     var type: DeviceType,
-    val status: DeviceStatus,
+    var status: DeviceStatus,
     var ip: InetAddress?,
     var groupId: String? = null
 )
