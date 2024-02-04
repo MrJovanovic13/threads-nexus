@@ -7,6 +7,7 @@ import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
 import com.mrjovanovic.threadsnexus.repository.CommandRepository
 import com.mrjovanovic.threadsnexus.repository.DeviceRepository
+import com.mrjovanovic.threadsnexus.service.DeviceEventsService
 import org.springframework.http.MediaType
 import org.springframework.http.codec.ServerSentEvent
 import org.springframework.stereotype.Component
@@ -22,7 +23,8 @@ import java.time.Duration
 class CommandHandler(
     private val commandRepository: CommandRepository,
     private val valueFlux: Flux<Command>,
-    private val deviceRepository: DeviceRepository
+    private val deviceRepository: DeviceRepository,
+    private val deviceEventsService: DeviceEventsService
 ) {
 
     fun publishCommand(req: ServerRequest): Mono<ServerResponse> =
@@ -45,10 +47,10 @@ class CommandHandler(
                 Flux.merge(
                     valueFlux.filter { it.device.id.equals(subscriberDeviceId) }
                         .doFinally {
-                            // TODO Send a device offline event
                             deviceRepository.findById(subscriberDeviceId).map { device ->
                                 device.status = DeviceStatus.OFFLINE
                                 deviceRepository.save(device).subscribe()
+                                deviceEventsService.postDeviceOnlineStatusChangeEvent(device, device.status)
                             }.subscribe()
                         },
                     Flux.interval(Duration.ofSeconds(5))
