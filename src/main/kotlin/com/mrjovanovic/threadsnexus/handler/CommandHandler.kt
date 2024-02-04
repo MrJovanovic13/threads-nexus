@@ -46,6 +46,15 @@ class CommandHandler(
             .body(
                 Flux.merge(
                     valueFlux.filter { it.device.id.equals(subscriberDeviceId) }
+                        // TODO There is some code duplication here
+                        .doOnSubscribe {
+                            deviceRepository.findById(subscriberDeviceId).map { device ->
+                                // Device status change to online for redundancy, FE already handles this on startup
+                                device.status = DeviceStatus.ONLINE
+                                deviceRepository.save(device).subscribe()
+                                deviceEventsService.postDeviceOnlineStatusChangeEvent(device, DeviceStatus.ONLINE)
+                            }.subscribe()
+                        }
                         .doFinally {
                             deviceRepository.findById(subscriberDeviceId).map { device ->
                                 device.status = DeviceStatus.OFFLINE
