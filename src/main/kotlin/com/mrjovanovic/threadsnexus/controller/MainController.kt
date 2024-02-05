@@ -3,6 +3,7 @@ package com.mrjovanovic.threadsnexus.controller
 import com.mrjovanovic.threadsnexus.handler.CommandHandler
 import com.mrjovanovic.threadsnexus.handler.DeviceEventHandler
 import com.mrjovanovic.threadsnexus.handler.DeviceHandler
+import com.mrjovanovic.threadsnexus.handler.FileTransferHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +16,8 @@ class MainController {
     fun mainRouter(
         @Autowired deviceEventHandler: DeviceEventHandler,
         @Autowired deviceHandler: DeviceHandler,
-        @Autowired commandHandler: CommandHandler
+        @Autowired commandHandler: CommandHandler,
+        @Autowired fileTransferHandler: FileTransferHandler
     ) = router {
 
         path("/api/events")
@@ -32,6 +34,12 @@ class MainController {
                 GET("").invoke(deviceHandler::getDevicesByGroupId)
                 POST("/{deviceId}/publish-command").invoke(commandHandler::publishCommand)
                 POST("").invoke(deviceHandler::saveDevice)
+            }
+
+        path("/api/devices/{deviceId}/files")
+            .nest {
+                GET("").invoke(fileTransferHandler::getFile)
+                POST("").invoke(fileTransferHandler::saveFile)
             }
     }
 }
