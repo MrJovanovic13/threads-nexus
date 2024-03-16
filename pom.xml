@@ -11,7 +11,7 @@
 	<groupId>com.mrjovanovic</groupId>
 	<artifactId>threadsnexus</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>threadsnexus</name>
+	<name>threads-nexus</name>
 	<properties>
 		<java.version>17</java.version>
 		<kotlin.version>1.8.22</kotlin.version>
@@ -67,6 +67,7 @@
 	<build>
 		<sourceDirectory>src/main/kotlin/com/mrjovanovic/threadsnexus</sourceDirectory>
 		<testSourceDirectory>src/test/kotlin/com/mrjovanovic/threadsnexus</testSourceDirectory>
+		<finalName>threads-nexus</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

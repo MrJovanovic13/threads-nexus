@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+
+  localstack:
+    container_name: threads-nexus-localstack
+    image: localstack/localstack:latest
+    environment:
+      - DEBUG=1
+      - USE_SSL=0
+      - AWS_CBOR_DISABLE=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOSTNAME=localstack
+      - SERVICES=s3
+      - AWS_DEFAULT_REGION=eu-central-1
+      - AWS_ACCESS_KEY_ID=aws
+      - AWS_SECRET_ACCESS_KEY=localstack.aws
+      - DATA_DIR=/tmp/localstack/data
+    ports:
+      - "4566:4566"
+
+  threads-nexus:
+    container_name: threads-nexus
+    image: threads-nexus-image
+    build:
+      dockerfile: docker/Dockerfile
+      context: ../
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    depends_on:
+      - localstack
+    environment:
+      - "JDK_JAVA_OPTIONS=--add-opens java.base/java.lang=ALL-UNNAMED"
+      - "JDK_JAVA_OPTIONS=--add-opens=java.base/java.io=ALL-UNNAMED"
+      - "JDK_JAVA_OPTIONS=--add-opens=java.base/java.net=ALL-UNNAMED"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  db:
+    driver: local
