@@ -17,6 +17,7 @@
 		<kotlin.version>1.8.22</kotlin.version>
 		<aws.version>1.0.79</aws.version>
 		<junit.version>5.10.1</junit.version>
+		<kotlinx-coroutine-reactor.version>1.8.0</kotlinx-coroutine-reactor.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -67,7 +68,12 @@
 		<dependency>
 			<groupId>aws.sdk.kotlin</groupId>
 			<artifactId>s3-jvm</artifactId>
-			<version>1.0.79</version>
+			<version>${aws.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlinx</groupId>
+			<artifactId>kotlinx-coroutines-reactor</artifactId>
+			<version>${kotlinx-coroutine-reactor.version}</version>
 		</dependency>
 	</dependencies>
 

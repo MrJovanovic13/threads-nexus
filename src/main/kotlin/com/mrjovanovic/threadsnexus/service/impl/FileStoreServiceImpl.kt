@@ -6,13 +6,20 @@ import aws.sdk.kotlin.services.s3.model.GetObjectRequest
 import aws.sdk.kotlin.services.s3.model.ObjectCannedAcl
 import aws.sdk.kotlin.services.s3.putObject
 import aws.smithy.kotlin.runtime.content.ByteStream
+import aws.smithy.kotlin.runtime.content.toByteArray
+import com.mrjovanovic.threadsnexus.model.dto.DataBufferFluxWithMetadataDto
 import com.mrjovanovic.threadsnexus.service.FileStoreService
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders.CONTENT_LENGTH
-import org.springframework.http.HttpHeaders.CONTENT_TYPE
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.core.io.buffer.DefaultDataBufferFactory
+import org.springframework.http.HttpHeaders.*
+import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
+import reactor.core.publisher.Flux
+
 
 @Service
 class FileStoreServiceImpl(private val s3Client: S3Client) : FileStoreService {
@@ -20,38 +27,57 @@ class FileStoreServiceImpl(private val s3Client: S3Client) : FileStoreService {
     @Value("\${amazon.properties.bucket.name}")
     private lateinit var bucketName: String
 
-    override fun uploadFile(fileName: String, multipartFile: MultipartFile) {
-        runBlocking {
-            s3Client.use { s3 ->
-                s3.putObject {
-                    bucket = bucketName
-                    key = fileName
-                    body = ByteStream.fromBytes(multipartFile.bytes)
-                    metadata = mapOf(
-                        CONTENT_TYPE to multipartFile.contentType!!, // TODO will this ever be null if file is not null?
-                        CONTENT_LENGTH to multipartFile.size.toString()
-                    )
-                    acl = ObjectCannedAcl.PublicRead
-                }
+    override suspend fun uploadFile(fileName: String, filePart: FilePart) {
+        val fromBytes = ByteStream.fromBytes(mergeDataBuffers(filePart.content()))
+        val filename = filePart.filename()
+
+        s3Client.let { s3 ->
+            s3.putObject {
+                bucket = bucketName
+                key = fileName
+                body = fromBytes
+                metadata = mapOf(
+                    CONTENT_TYPE to filePart.headers().contentType.toString(),
+                    CONTENT_LENGTH to fromBytes.contentLength.toString(),
+                    CONTENT_DISPOSITION to "attachment; $filename"
+                )
+                acl = ObjectCannedAcl.PublicRead
             }
         }
     }
 
-    override fun downloadFile(fileName: String): ByteStream {
-        return runBlocking {
-            s3Client.getObject(GetObjectRequest.invoke {
-                key = fileName
-                bucket = bucketName
-            }) { getObjectResponse -> getObjectResponse.body!! } // TODO What if file does not exist/is null?
+    override suspend fun downloadFile(fileName: String): DataBufferFluxWithMetadataDto {
+        return s3Client.getObject(GetObjectRequest.invoke {
+            key = fileName
+            bucket = bucketName
+        }) { getObjectResponse ->
+            val byteArray = getObjectResponse.body!!.toByteArray()
+            val dataBufferFlux = DataBufferUtils.read(
+                ByteArrayResource(byteArray),
+                DefaultDataBufferFactory(),
+                1024
+            )
+            val metadata = getObjectResponse.metadata
+            println(metadata)
+            DataBufferFluxWithMetadataDto(dataBufferFlux, metadata)
         }
     }
 
-    override fun deleteFile(fileName: String) {
-        runBlocking {
-            s3Client.deleteObject {
-                key = fileName
-                bucket = bucketName
-            }
+    override suspend fun deleteFile(fileName: String) {
+        s3Client.deleteObject {
+            key = fileName
+            bucket = bucketName
         }
+    }
+
+    // Entire file is being read in memory. Refactor to a streaming solution in the future.
+    suspend fun mergeDataBuffers(dataBufferFlux: Flux<DataBuffer>): ByteArray {
+        return DataBufferUtils.join(dataBufferFlux)
+            .map { dataBuffer ->
+                val bytes = ByteArray(dataBuffer.readableByteCount())
+                dataBuffer.read(bytes)
+                DataBufferUtils.release(dataBuffer)
+                bytes
+            }.awaitSingle()
     }
 }

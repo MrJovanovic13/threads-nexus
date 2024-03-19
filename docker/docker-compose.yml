@@ -17,6 +17,8 @@ services:
       - DATA_DIR=/tmp/localstack/data
     ports:
       - "4566:4566"
+    volumes:
+      - ./localStackScripts:/etc/localstack/init/ready.d
 
   threads-nexus:
     container_name: threads-nexus
