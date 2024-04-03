@@ -20,10 +20,14 @@ class FileController(
 ) {
 
     @PostMapping("/api/devices/{deviceId}/files", consumes = ["multipart/form-data"])
-    suspend fun uploadFile(@RequestPart("file") filePart: FilePart, @PathVariable deviceId: String) {
+    suspend fun uploadFile(
+        @RequestPart("file") filePart: FilePart,
+        @RequestParam recipientDeviceIds: List<String>,
+        @PathVariable deviceId: String
+    ) {
         fileStoreService.uploadFile(deviceId, filePart)
             .toMono()
-            .doOnSuccess { commandIssuerService.issueFileDownloadCommand(deviceId) }
+            .doOnSuccess { commandIssuerService.issueFileDownloadCommand(deviceId, recipientDeviceIds) }
             .subscribe()
     }
 
