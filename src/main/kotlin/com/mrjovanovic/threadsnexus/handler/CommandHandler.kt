@@ -63,7 +63,7 @@ class CommandHandler(
                             }.subscribe()
                         },
                     Flux.interval(Duration.ofSeconds(5))
-                        .map { Command(null, CommandType.HEARTBEAT, device, emptyMap()) }
+                        .map { Command(null, CommandType.HEARTBEAT, device) }
                 ).map { e ->
                     ServerSentEvent.builder(e)
                         .build()

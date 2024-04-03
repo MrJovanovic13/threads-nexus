@@ -13,7 +13,10 @@ class CommandIssuerServiceImpl(
     private val deviceRepository: DeviceRepository
 ) : CommandIssuerService {
 
-    override fun issueFileDownloadCommand(fileUploaderDeviceId: String, fileRecipientDeviceIds: List<String>) {
+    override fun issueFileDownloadCommandFromOneToManyDevices(
+        fileUploaderDeviceId: String,
+        fileRecipientDeviceIds: List<String>
+    ) {
         for (fileRecipientDeviceId in fileRecipientDeviceIds) {
             val metadata = hashMapOf("fileUploaderDeviceId" to fileUploaderDeviceId)
             deviceRepository.findById(fileRecipientDeviceId).map {
@@ -21,6 +24,16 @@ class CommandIssuerServiceImpl(
                 issueCommand(downloadFileCommand)
             }.subscribe()
         }
+    }
+
+    override fun issueFileDownloadCommandToEntireDeviceGroup(fileUploaderDeviceId: String, deviceGroupId: String) {
+        val metadata = hashMapOf("fileUploaderDeviceId" to fileUploaderDeviceId)
+        deviceRepository.findDevicesByGroupId(deviceGroupId)
+            .filter { device -> device.id != fileUploaderDeviceId }
+            .map {
+                val downloadFileCommand = Command(null, CommandType.DOWNLOAD_PENDING_FILE_FROM_CONTEXT, it, metadata)
+                issueCommand(downloadFileCommand)
+            }.subscribe()
     }
 
     override fun issueCommand(command: Command) {

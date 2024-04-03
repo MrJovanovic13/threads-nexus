@@ -4,7 +4,9 @@ import com.mrjovanovic.threadsnexus.model.Command
 
 interface CommandIssuerService {
 
-    fun issueFileDownloadCommand(fileUploaderDeviceId: String, fileRecipientDeviceIds: List<String>)
+    fun issueFileDownloadCommandFromOneToManyDevices(fileUploaderDeviceId: String, fileRecipientDeviceIds: List<String>)
+
+    fun issueFileDownloadCommandToEntireDeviceGroup(fileUploaderDeviceId: String, deviceGroupId: String)
 
     fun issueCommand(command: Command)
 }

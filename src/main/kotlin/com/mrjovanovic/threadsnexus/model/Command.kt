@@ -11,5 +11,5 @@ data class Command(
     var id: String? = null,
     var commandType: CommandType,
     var device: Device,
-    var metadata: Map<String, String>
+    var metadata: Map<String, String>? = emptyMap()
 )

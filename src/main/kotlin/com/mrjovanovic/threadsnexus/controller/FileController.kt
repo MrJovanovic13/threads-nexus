@@ -20,14 +20,36 @@ class FileController(
 ) {
 
     @PostMapping("/api/devices/{deviceId}/files", consumes = ["multipart/form-data"])
-    suspend fun uploadFile(
+    suspend fun uploadFileToDevices(
         @RequestPart("file") filePart: FilePart,
         @RequestParam recipientDeviceIds: List<String>,
         @PathVariable deviceId: String
     ) {
         fileStoreService.uploadFile(deviceId, filePart)
             .toMono()
-            .doOnSuccess { commandIssuerService.issueFileDownloadCommand(deviceId, recipientDeviceIds) }
+            .doOnSuccess {
+                commandIssuerService.issueFileDownloadCommandFromOneToManyDevices(
+                    deviceId,
+                    recipientDeviceIds
+                )
+            }
+            .subscribe()
+    }
+
+    @PostMapping("/api/groups/{groupId}/files", consumes = ["multipart/form-data"])
+    suspend fun uploadFileToDevicesInGroup(
+        @RequestPart("file") filePart: FilePart,
+        @PathVariable groupId: String,
+        @RequestParam fileUploaderDeviceId: String
+    ) {
+        fileStoreService.uploadFile(groupId, filePart)
+            .toMono()
+            .doOnSuccess {
+                commandIssuerService.issueFileDownloadCommandToEntireDeviceGroup(
+                    fileUploaderDeviceId,
+                    groupId
+                )
+            }
             .subscribe()
     }
 
