@@ -5,6 +5,7 @@ import com.mrjovanovic.threadsnexus.model.DeviceEvent
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
 import com.mrjovanovic.threadsnexus.model.enumeration.Severity
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +16,10 @@ import java.time.Duration
 import java.time.Instant
 
 @Configuration
-class DeviceEventsSinkConfig {
+class DeviceEventsSinkConfig(
+    @Value("\${sse.heartbeat.frequency.seconds}")
+    private var heartbeatFrequencySeconds: Long
+) {
 
     @Bean
     fun deviceEventsSink(): Sinks.Many<DeviceEvent> {
@@ -30,7 +34,7 @@ class DeviceEventsSinkConfig {
 
     @EventListener(ApplicationReadyEvent::class)
     fun initializeSSEHeartbeat() {
-        Flux.interval(Duration.ofSeconds(5))
+        Flux.interval(Duration.ofSeconds(heartbeatFrequencySeconds))
             .doOnNext { emitHeartbeatEvent() }
             .subscribe()
     }
