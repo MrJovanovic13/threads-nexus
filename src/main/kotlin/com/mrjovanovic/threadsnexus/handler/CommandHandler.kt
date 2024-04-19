@@ -2,6 +2,7 @@ package com.mrjovanovic.threadsnexus.handler
 
 import com.mrjovanovic.threadsnexus.model.Command
 import com.mrjovanovic.threadsnexus.model.Device
+import com.mrjovanovic.threadsnexus.model.enumeration.BackendServerDeviceIdentifier
 import com.mrjovanovic.threadsnexus.model.enumeration.CommandType
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
@@ -38,7 +39,14 @@ class CommandHandler(
             )
 
     fun streamCommands(req: ServerRequest): Mono<ServerResponse> {
-        val device = Device("BACKEND_SERVER", "BACKEND_SERVER", DeviceType.UNKNOWN, DeviceStatus.ONLINE, null, null)
+        val device = Device(
+            BackendServerDeviceIdentifier.ID.value,
+            BackendServerDeviceIdentifier.NAME.value,
+            DeviceType.UNKNOWN,
+            DeviceStatus.ONLINE,
+            null,
+            null
+        )
         val subscriberDeviceId = req.pathVariable("deviceId")
 
         return ServerResponse.ok()
