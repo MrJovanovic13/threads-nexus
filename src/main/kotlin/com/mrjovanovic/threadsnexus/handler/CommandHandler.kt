@@ -9,6 +9,7 @@ import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
 import com.mrjovanovic.threadsnexus.repository.CommandRepository
 import com.mrjovanovic.threadsnexus.repository.DeviceRepository
 import com.mrjovanovic.threadsnexus.service.DeviceEventsService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.http.codec.ServerSentEvent
 import org.springframework.stereotype.Component
@@ -25,7 +26,9 @@ class CommandHandler(
     private val commandRepository: CommandRepository,
     private val valueFlux: Flux<Command>,
     private val deviceRepository: DeviceRepository,
-    private val deviceEventsService: DeviceEventsService
+    private val deviceEventsService: DeviceEventsService,
+    @Value("\${sse.heartbeat.frequency.seconds}")
+    private var heartbeatFrequencySeconds: Long
 ) {
 
     fun publishCommand(req: ServerRequest): Mono<ServerResponse> =
@@ -39,7 +42,7 @@ class CommandHandler(
             )
 
     fun streamCommands(req: ServerRequest): Mono<ServerResponse> {
-        val device = Device(
+        val backendDevice = Device(
             BackendServerDeviceIdentifier.ID.value,
             BackendServerDeviceIdentifier.NAME.value,
             DeviceType.UNKNOWN,
@@ -51,31 +54,32 @@ class CommandHandler(
 
         return ServerResponse.ok()
             .contentType(MediaType.TEXT_EVENT_STREAM)
-            .body(
-                Flux.merge(
-                    valueFlux.filter { it.device.id.equals(subscriberDeviceId) }
-                        // TODO There is some code duplication here
-                        .doOnSubscribe {
-                            deviceRepository.findById(subscriberDeviceId).map { device ->
-                                // Device status change to online for redundancy, FE already handles this on startup
-                                device.status = DeviceStatus.ONLINE
-                                deviceRepository.save(device).subscribe()
-                                deviceEventsService.postDeviceOnlineStatusChangeEvent(device, DeviceStatus.ONLINE)
-                            }.subscribe()
-                        }
-                        .doFinally {
-                            deviceRepository.findById(subscriberDeviceId).map { device ->
-                                device.status = DeviceStatus.OFFLINE
-                                deviceRepository.save(device).subscribe()
-                                deviceEventsService.postDeviceOnlineStatusChangeEvent(device, device.status)
-                            }.subscribe()
-                        },
-                    Flux.interval(Duration.ofSeconds(5))
-                        .map { Command(null, CommandType.HEARTBEAT, device) }
-                ).map { e ->
-                    ServerSentEvent.builder(e)
-                        .build()
-                }
-            )
+            .body(Flux.merge(
+                valueFlux
+                    .filter { it.device.id.equals(subscriberDeviceId) }
+                    .doOnSubscribe { sendDeviceStatusUpdateEvent(subscriberDeviceId, DeviceStatus.ONLINE) }
+                    .doFinally { sendDeviceStatusUpdateEvent(subscriberDeviceId, DeviceStatus.OFFLINE) },
+                emitHeartbeatCommandServerSentEvents(backendDevice)
+            ).map { e ->
+                ServerSentEvent.builder(e).build()
+            })
     }
+
+    private fun sendDeviceStatusUpdateEvent(subscriberDeviceId: String, deviceStatus: DeviceStatus) {
+        deviceRepository.findById(subscriberDeviceId)
+            .flatMap { device ->
+                device.status = deviceStatus
+                Mono.just(device)
+            }
+            .flatMap { device -> deviceRepository.save(device) }
+            .flatMap { device ->
+                deviceEventsService.postDeviceOnlineStatusChangeEvent(device, device.status)
+                Mono.just(device)
+            }
+            .subscribe()
+    }
+
+    private fun emitHeartbeatCommandServerSentEvents(device: Device) =
+        Flux.interval(Duration.ofSeconds(heartbeatFrequencySeconds))
+            .map { Command(null, CommandType.HEARTBEAT, device) }
 }
