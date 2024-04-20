@@ -73,7 +73,7 @@ class CommandHandler(
             }
             .flatMap { device -> deviceRepository.save(device) }
             .flatMap { device ->
-                deviceEventsService.postDeviceOnlineStatusChangeEvent(device, device.status)
+                deviceEventsService.postCurrentDeviceStatusEvent(device)
                 Mono.just(device)
             }
             .subscribe()

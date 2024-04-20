@@ -2,8 +2,8 @@ package com.mrjovanovic.threadsnexus.service.impl
 
 import com.mrjovanovic.threadsnexus.model.Device
 import com.mrjovanovic.threadsnexus.model.DeviceEvent
-import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
-import com.mrjovanovic.threadsnexus.model.enumeration.Severity
+import com.mrjovanovic.threadsnexus.model.enumeration.DeviceEventType
+import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus.ONLINE
 import com.mrjovanovic.threadsnexus.repository.DeviceEventRepository
 import com.mrjovanovic.threadsnexus.service.DeviceEventsService
 import org.springframework.stereotype.Service
@@ -12,8 +12,13 @@ import java.time.Instant
 @Service
 class DeviceEventsServiceImpl(private val deviceEventRepository: DeviceEventRepository) : DeviceEventsService {
 
-    override fun postDeviceOnlineStatusChangeEvent(device: Device, status: DeviceStatus) {
-        val deviceEvent = DeviceEvent(null, "DEVICE OFFLINE", null, Instant.now(), Severity.MEDIUM, device)
+    override fun postCurrentDeviceStatusEvent(device: Device) {
+        val deviceEventType: DeviceEventType =
+            if (device.status == ONLINE) DeviceEventType.DEVICE_ONLINE
+            else DeviceEventType.DEVICE_OFFLINE
+
+        val deviceEvent =
+            DeviceEvent(null, deviceEventType.title, null, Instant.now(), deviceEventType.severity, device)
 
         postDeviceEvent(deviceEvent)
     }
