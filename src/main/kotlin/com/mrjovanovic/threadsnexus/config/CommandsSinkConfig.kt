@@ -18,7 +18,8 @@ class CommandsSinkConfig {
 
     @Bean
     fun commandsFlux(): Flux<Command> {
-        return commandsSink().asFlux()
+        return commandsSink()
+            .asFlux()
             .cache(0)
     }
 }

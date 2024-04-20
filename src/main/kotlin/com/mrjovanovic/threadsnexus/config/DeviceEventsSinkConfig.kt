@@ -24,17 +24,20 @@ class DeviceEventsSinkConfig(
 
     @Bean
     fun deviceEventsSink(): Sinks.Many<DeviceEvent> {
-        return Sinks.many().multicast().onBackpressureBuffer(20)
+        return Sinks.many()
+            .multicast()
+            .onBackpressureBuffer(20)
     }
 
     @Bean
     fun deviceEventsFlux(): Flux<DeviceEvent> {
-        return deviceEventsSink().asFlux()
+        return deviceEventsSink()
+            .asFlux()
             .cache(0)
     }
 
     @EventListener(ApplicationReadyEvent::class)
-    fun initializeSSEHeartbeat() {
+    fun initializeDeviceEventsHeartbeat() {
         Flux.interval(Duration.ofSeconds(heartbeatFrequencySeconds))
             .doOnNext { emitHeartbeatEvent() }
             .subscribe()
