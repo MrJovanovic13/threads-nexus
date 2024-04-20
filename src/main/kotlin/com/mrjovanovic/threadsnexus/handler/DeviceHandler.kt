@@ -17,8 +17,12 @@ class DeviceHandler(private val deviceRepository: DeviceRepository) {
             .body(deviceRepository.saveAll(req.bodyToMono(Device::class.java)), Device::class.java)
 
     fun getDevicesByGroupId(req: ServerRequest): Mono<ServerResponse> {
-        val queryParam = req.queryParam("groupId")
-        val devices = queryParam.map { deviceRepository.findDevicesByGroupId(it) }
+        val groupId = req.queryParam("groupId")
+        val searchText = req.queryParam("searchText").orElse("")
+        val devices = groupId
+            .map {
+                deviceRepository.findDevicesByGroupIdAndNameContainingIgnoreCase(it, searchText)
+            }
             .orElseGet { deviceRepository.findAll() }
 
         return ServerResponse.ok()
