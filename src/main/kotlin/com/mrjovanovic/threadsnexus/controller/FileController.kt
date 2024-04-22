@@ -22,8 +22,8 @@ class FileController(
     @PostMapping("/api/devices/{deviceId}/files", consumes = ["multipart/form-data"])
     suspend fun uploadFileToDevices(
         @RequestPart("file") filePart: FilePart,
-        @RequestParam recipientDeviceIds: List<String>,
-        @PathVariable deviceId: String
+        @RequestPart("recipientDeviceIds") recipientDeviceIds: List<String>,
+        @PathVariable deviceId: String,
     ) {
         fileStoreService.uploadFile(deviceId, filePart)
             .toMono()
@@ -54,7 +54,7 @@ class FileController(
     }
 
     @GetMapping("/api/devices/{deviceId}/files")
-    suspend fun downloadFIle(@PathVariable deviceId: String): ResponseEntity<Flux<DataBuffer>> {
+    suspend fun downloadFile(@PathVariable deviceId: String): ResponseEntity<Flux<DataBuffer>> {
         val dataBufferFluxWithMetadata = fileStoreService.downloadFile(deviceId)
         val filename = dataBufferFluxWithMetadata.metadata
             ?.get(HttpHeaders.CONTENT_DISPOSITION.lowercase())
