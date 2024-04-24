@@ -15,4 +15,9 @@ class DeviceGroupHandler(private val deviceGroupRepository: DeviceGroupRepositor
         ServerResponse.ok()
             .json()
             .body(deviceGroupRepository.saveAll(req.bodyToMono(DeviceGroup::class.java)), DeviceGroup::class.java)
+
+    fun findById(req: ServerRequest): Mono<ServerResponse> =
+        ServerResponse.ok()
+            .json()
+            .body(deviceGroupRepository.findById(req.pathVariable("deviceGroupId")), DeviceGroup::class.java)
 }
