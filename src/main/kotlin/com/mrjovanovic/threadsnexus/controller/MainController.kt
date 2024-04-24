@@ -2,21 +2,22 @@ package com.mrjovanovic.threadsnexus.controller
 
 import com.mrjovanovic.threadsnexus.handler.CommandHandler
 import com.mrjovanovic.threadsnexus.handler.DeviceEventHandler
+import com.mrjovanovic.threadsnexus.handler.DeviceGroupHandler
 import com.mrjovanovic.threadsnexus.handler.DeviceHandler
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.router
 
 @Configuration
-class MainController {
+class MainController(
+    private val deviceEventHandler: DeviceEventHandler,
+    private val deviceHandler: DeviceHandler,
+    private val commandHandler: CommandHandler,
+    private val deviceGroupHandler: DeviceGroupHandler
+) {
 
     @Bean
-    fun mainRouter(
-        @Autowired deviceEventHandler: DeviceEventHandler,
-        @Autowired deviceHandler: DeviceHandler,
-        @Autowired commandHandler: CommandHandler,
-    ) = router {
+    fun mainRouter() = router {
 
         path("/api/events")
             .nest {
@@ -32,6 +33,11 @@ class MainController {
                 GET("").invoke(deviceHandler::getDevicesByGroupId)
                 POST("/{deviceId}/publish-command").invoke(commandHandler::publishCommand)
                 POST("").invoke(deviceHandler::saveDevice)
+            }
+
+        path("/api/device-groups")
+            .nest {
+                POST("").invoke(deviceGroupHandler::saveDeviceGroup)
             }
     }
 }
