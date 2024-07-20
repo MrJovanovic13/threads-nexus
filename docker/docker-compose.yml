@@ -20,6 +20,17 @@ services:
     volumes:
       - ./localStackScripts:/etc/localstack/init/ready.d
 
+  mongo-db:
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongodb
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - db:/data/db
+
   threads-nexus:
     container_name: threads-nexus
     image: threads-nexus-image
@@ -29,9 +40,10 @@ services:
     expose:
       - 8080
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - localstack
+      - mongo-db
     environment:
       - "JDK_JAVA_OPTIONS=--add-opens java.base/java.lang=ALL-UNNAMED"
       - "JDK_JAVA_OPTIONS=--add-opens=java.base/java.io=ALL-UNNAMED"
