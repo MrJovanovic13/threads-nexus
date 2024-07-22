@@ -8,5 +8,7 @@ interface DeviceRepository : ReactiveMongoRepository<Device, String> {
 
     fun findDevicesByGroupId(groupId: String): Flux<Device>
 
+    fun findDevicesByNameContainingIgnoreCase(name: String): Flux<Device>
+
     fun findDevicesByGroupIdAndNameContainingIgnoreCase(groupId: String, name: String): Flux<Device>
 }
