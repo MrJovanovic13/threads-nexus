@@ -13,9 +13,8 @@ import reactor.core.publisher.Mono
 @Service
 class DeviceServiceImpl(private val deviceRepository: DeviceRepository) : DeviceService {
 
-    override fun saveDevice(deviceCreateRequest: Mono<DeviceCreateRequest>): Mono<Device> {
-        return deviceCreateRequest.toEntity().flatMap(deviceRepository::save)
-    }
+    override fun saveDevice(deviceCreateRequest: Mono<DeviceCreateRequest>): Mono<Device> =
+        deviceCreateRequest.toEntity().flatMap(deviceRepository::save)
 
     override fun getDevices(devicesGetRequest: Mono<DevicesGetRequest>): Flux<Device> {
         return devicesGetRequest.flatMapMany {

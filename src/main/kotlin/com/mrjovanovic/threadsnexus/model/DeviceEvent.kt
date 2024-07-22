@@ -9,7 +9,7 @@ import java.time.Instant
 data class DeviceEvent(
 
     @Id
-    val id: String? = null,
+    val id: String?,
     val title: String,
     val info: String?,
     val timestamp: Instant,

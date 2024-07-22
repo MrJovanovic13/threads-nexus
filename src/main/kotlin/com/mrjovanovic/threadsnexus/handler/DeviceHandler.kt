@@ -16,14 +16,13 @@ import kotlin.jvm.optionals.getOrNull
 @Component
 class DeviceHandler(private val deviceService: DeviceService) {
 
-    fun saveDevice(req: ServerRequest): Mono<ServerResponse> {
-        val deviceCreateRequest = req.bodyToMono(DeviceCreateRequest::class.java)
-        val deviceResponse = deviceService.saveDevice(deviceCreateRequest).toDeviceResponse()
-
-        return ServerResponse.ok()
-            .json()
-            .body(deviceResponse)
-    }
+    fun saveDevice(req: ServerRequest): Mono<ServerResponse> = ServerResponse.ok()
+        .json()
+        .body(
+            deviceService
+                .saveDevice(req.bodyToMono(DeviceCreateRequest::class.java))
+                .toDeviceResponse()
+        )
 
     fun getDevicesByGroupId(req: ServerRequest): Mono<ServerResponse> {
         // TODO Introduce validation for not nullable values(groupId)

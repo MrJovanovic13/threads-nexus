@@ -4,6 +4,7 @@ import com.mrjovanovic.threadsnexus.model.Device
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import java.net.InetAddress
 
 data class DeviceResponse(
@@ -16,7 +17,7 @@ data class DeviceResponse(
 )
 
 fun Mono<Device>.toDeviceResponse() = flatMap {
-    Mono.just(it.toDeviceResponse())
+    it.toDeviceResponse().toMono()
 }
 
 fun Device.toDeviceResponse(): DeviceResponse =

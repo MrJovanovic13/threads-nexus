@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class DeviceGroup(
 
     @Id
-    val id: String? = null,
+    val id: String?,
     var name: String,
     val groupAdminDeviceId: String
 )

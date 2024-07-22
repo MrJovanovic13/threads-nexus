@@ -38,6 +38,7 @@ class MainController(
         path("/api/device-groups")
             .nest {
                 GET("/{deviceGroupId}").invoke(deviceGroupHandler::findById)
+                GET("").invoke(deviceGroupHandler::findAll)
                 POST("").invoke(deviceGroupHandler::saveDeviceGroup)
             }
     }

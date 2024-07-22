@@ -1,6 +1,8 @@
 package com.mrjovanovic.threadsnexus.service
 
 import com.mrjovanovic.threadsnexus.model.Command
+import com.mrjovanovic.threadsnexus.model.dto.request.CommandCreateRequest
+import reactor.core.publisher.Mono
 
 interface CommandIssuerService {
 
@@ -8,5 +10,7 @@ interface CommandIssuerService {
 
     fun issueFileDownloadCommandToEntireDeviceGroup(fileUploaderDeviceId: String, deviceGroupId: String)
 
-    fun issueCommand(command: Command)
+    fun publishCommand(command: Command)
+
+    fun publishCommand(command: Mono<CommandCreateRequest>): Mono<Command>
 }

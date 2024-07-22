@@ -1,11 +1,9 @@
 package com.mrjovanovic.threadsnexus.model
 
-import com.mrjovanovic.threadsnexus.model.dto.request.DeviceCreateRequest
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceStatus
 import com.mrjovanovic.threadsnexus.model.enumeration.DeviceType
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import reactor.core.publisher.Mono
 import java.net.InetAddress
 
 @Document(collection = "Devices")
